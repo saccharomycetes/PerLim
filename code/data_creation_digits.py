@@ -116,8 +116,8 @@ def create_position_image(args):
             for x in range(patch_num):
                 position = patch_num * y + x
                 rest_positions = random.sample([k for k in range(patch_num ** 2) if k != position], 10)
-                coordinates = [(x, y)] + [(r % patch_num, r // patch_num) for r in rest_positions]
-                corrdinates = [(patch_size * (c[0] + 0.5), patch_size * (c[1] + 0.5)) for c in coordinates][:len(eq_texts)]
+                corrdinates = [(x, y)] + [(r % patch_num, r // patch_num) for r in rest_positions]
+                corrdinates = [(patch_size * (c[0] + 0.5), patch_size * (c[1] + 0.5)) for c in corrdinates][:len(eq_texts)]
                 img = draw_text(
                     text=eq_texts,
                     img_size=(args.image_size, args.image_size),
@@ -288,11 +288,11 @@ if __name__ == '__main__':
         args.samples = 100  
 
     if args.task == "distract":
-        args.save_dir = f'./images/{args.model}/{args.task}_{args.font_size}'
+        args.save_dir = f'./data/digits/images/{args.model}/{args.task}_{args.font_size}'
     elif args.task == 'quality' or args.task == 'size' or args.task == 'hcut' or args.task == 'vcut':
-        args.save_dir = f'./images/{args.model}/{args.task}_{args.digits}'
+        args.save_dir = f'./data/digits/images/{args.model}/{args.task}_{args.digits}'
     elif args.task == 'position':
-        args.save_dir = f'./images/{args.model}/{args.task}_{args.distractor_num}'
+        args.save_dir = f'./data/digits/images/{args.model}/{args.task}_{args.distractor_num}'
 
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)

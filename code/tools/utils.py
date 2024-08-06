@@ -2,25 +2,31 @@ import argparse
 import json
 import os
 
+question_base = '''
+0	T-shirt/top
+1	Trouser
+2	Pullover
+3	Dress
+4	Coat
+5	Sandal
+6	Shirt
+7	Sneaker
+8	Bag
+9	Ankle boot
+Answer just with the corresponding object number from above directly.'''
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model",
+        "--output_path",
         type=str,
-        required=True,
-        choices=[
-            "instructblip-vicuna-13b",
-            "llava-1.5-13b-hf",
-            "blip2-flan-t5-xxl",
-            "fuyu-8b",
-            'Qwen-VL-Chat'
-        ],
+        default="./data/fashion/prediction",
     )
 
     parser.add_argument(
         "--img_path",
         type=str,
-        default="images",
+        default="./data/fashion/images/blip2-flan-t5-xxl/quality",
     )
 
     parser.add_argument(

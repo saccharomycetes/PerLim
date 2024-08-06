@@ -1,6 +1,6 @@
 import os
-os.environ['TRANSFORMERS_CACHE'] = "../cache"
-os.environ['HF_HOME'] = "../cache"
+os.environ['TRANSFORMERS_CACHE'] = "../../cache"
+os.environ['HF_HOME'] = "../../cache"
 from PIL import Image
 import torch
 import json
@@ -23,16 +23,11 @@ def get_free_gpu():
 
 def main(args):
 
-    my_cache_dir = "../cache"
-
-    if not os.path.exists(my_cache_dir):
-        os.makedirs(my_cache_dir)
-
     model, processor, q_to_instrut, response_to_answer = load_model(args)
 
+    # replace because instructblip and blip2 share the same image path
+    args.img_path = args.img_path.replace("instructblip-vicuna-13b", "blip2-flan-t5-xxl")
     all_images = os.listdir(args.img_path)
-
-    variables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 
     new_datas = {}
 
@@ -42,18 +37,14 @@ def main(args):
     else:
         this_images = all_images
 
-    data_name = args.img_path.split("/")[-1]
-
-    task, version = data_name.split("_")
-
-    for image_name in tqdm(this_images, ncols=100, desc=f"inferencing and {args.img_path}"):
+    for image_name in tqdm(this_images, ncols=100, desc=f"inferencing {args.model}, {args.task}"):
 
         image_path = os.path.join(args.img_path, image_name)
 
-        if task != "position" and task != "distract":
-            question = "What is the number on the image?"
+        if "position" not in args.task and "distract" not in args.task:
+            question = f"What is the object presented in the image?{question_base}"
         else:
-            question = "what is the number assigned to variable 'a' in the image?"
+            question = f"What is the object marked by 'a'?{question_base}"
 
         prompt = q_to_instrut(question)
 
@@ -66,21 +57,26 @@ def main(args):
             inputs = processor(text=prompt, images=image, return_tensors="pt").to(args.device, dtype=torch.float16)
 
         if 'fuyu' in args.model:
-            generate_ids = model.generate(**inputs,  max_new_tokens=30, pad_token_id=model.config.eos_token_id)
+            generate_ids = model.generate(**inputs,  max_new_tokens=10, pad_token_id=model.config.eos_token_id)
         else:
-            generate_ids = model.generate(**inputs,  max_new_tokens=30)
+            generate_ids = model.generate(**inputs,  max_new_tokens=10)
         generation = processor.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0].strip()
             
         answer = response_to_answer(generation)
 
         new_datas[image_name] = answer
 
-    if not os.path.exists(f'./prediction/temp'):
-        os.makedirs(f'./prediction/temp')
+    if not os.path.exists(args.output_path):
+        os.makedirs(args.output_path)
 
-    data_name = args.img_path.split("/")[2]
+    file_name = os.path.join(args.output_path, f"{args.model}_{args.task}.json")
 
-    with open(f"./prediction/temp/{args.model}_{task}_{version}_{args.this_part}_{args.total_part}.json", "w") as f:
+    if os.path.exists(file_name):
+        with open(file_name, "r") as f:
+            datas = json.load(f)
+            new_datas.update(datas)
+
+    with open(file_name, "w") as f:
         json.dump(new_datas, f, indent=4)
 
 if __name__ == "__main__":
@@ -89,5 +85,9 @@ if __name__ == "__main__":
 
     # args.device = f"cuda:{get_free_gpu()}" if torch.cuda.is_available() else "cpu"
     args.device = f"cuda" if torch.cuda.is_available() else "cpu"
+
+    args.task = args.img_path.split("/")[-1]
+
+    args.model = args.img_path.split("/")[-2]
 
     main(args)

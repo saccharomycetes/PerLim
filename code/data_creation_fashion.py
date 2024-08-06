@@ -1,7 +1,10 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
 import gzip
 import numpy as np
+import argparse
+import random
+from tqdm import tqdm
 
 def load_fashion(path, kind='train'):
 
@@ -16,7 +19,7 @@ def load_fashion(path, kind='train'):
     with gzip.open(images_path, 'rb') as imgpath:
         images = np.frombuffer(imgpath.read(), dtype=np.uint8,
                                offset=16).reshape(len(labels), 784)
-    images = [Image.fromarray(image.reshape(28, 28)).convert('RGB') for image in images]
+    images = [Image.fromarray(255 - image.reshape(28, 28)).convert('RGB') for image in images]
 
     return images, labels
 
@@ -32,25 +35,102 @@ def paste_in_center(image, background):
 # TODO: down sample to a certain size them upsample to a unified size
 def create_quality_image(args):
     ratios = list(range(1,11))
-    for number in tqdm(args.digit_set, desc="Creating images", ncols=100):
+    for selected_data in tqdm(args.selected_data, desc="Creating images", ncols=100):
+        image = [i[0] for i in selected_data]
+        label = [i[1] for i in selected_data]
+        ids = [i[2] for i in selected_data]
         background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
+        for ratio in ratios:
+            down_sample_image = image[0].resize((int(2.8 * ratio), int(2.8 * ratio)), Image.LANCZOS)
+            up_sample_image = down_sample_image.resize((100, 100), Image.LANCZOS)
+            background = paste_in_center(up_sample_image, background)
+            background.save(f'{args.save_dir}/{ids[0]}_{label[0]}_{ratio}.png')
 
-# TODO: paste images in all places, and put letters
+# TODO: down sample to a certain size them upsample to a unified size
+def create_size_image(args):
+    ratios = [r/2 for r in range(2, 12)]
+    for selected_data in tqdm(args.selected_data, desc="Creating images", ncols=100):
+        image = [i[0] for i in selected_data]
+        label = [i[1] for i in selected_data]
+        ids = [i[2] for i in selected_data]
+        background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
+        for ratio in ratios:
+            down_sample_image = image[0].resize((14, 14), Image.LANCZOS)
+            up_sample_image = down_sample_image.resize((int(28*ratio), int(28*ratio)), Image.LANCZOS)
+            background = paste_in_center(up_sample_image, background)
+            background.save(f'{args.save_dir}/{ids[0]}_{label[0]}_{ratio}.png')
+
+
 def create_position_image(args):
+    variables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+    patch_num = args.patch_num // 2 if args.patch_size < 15 else args.patch_num
+    patch_size = args.patch_size * 2 if args.patch_size < 15 else args.patch_size
+    for selected_data in tqdm(args.selected_data, desc="Creating images", ncols=100):
+        image = [i[0] for i in selected_data]
+        label = [i[1] for i in selected_data]
+        ids = [i[2] for i in selected_data]
+        eq_texts = [f'{var}' for var, str in zip(variables, image)]
+        for y in range(patch_num):
+            for x in range(patch_num):
+                background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
+                position = patch_num * y + x
+                rest_positions = random.sample([k for k in range(patch_num ** 2) if k != position], 10)
+                coordinates_nums = [(x, y)] + [(r % patch_num, r // patch_num) for r in rest_positions]
+                coordinates = [(patch_size * (c[0]), patch_size * (c[1])) for c in coordinates_nums][:len(eq_texts)]
+                for i, (coordinate, coordinate_num) in enumerate(zip(coordinates, coordinates_nums)):
+                    background.paste(image[i], (coordinate[0], coordinate[1]))
+                    draw = ImageDraw.Draw(background)
+                    draw.text((coordinate[0]+1, coordinate[1]), eq_texts[i], fill='red')
+                background.save(f'{args.save_dir}/{ids[0]}_{label[0]}_{position}.png')
+
+def create_distract_image(args):
+    variables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+    patch_num = args.patch_num // 2 if args.patch_size < 15 else args.patch_num
+    patch_size = args.patch_size * 2 if args.patch_size < 15 else args.patch_size
+    center_pos = ((patch_num + 1) * patch_num ) // 2
+
+    for selected_data in tqdm(args.selected_data, desc="Creating images", ncols=100):
+        image = [i[0] for i in selected_data]
+        label = [i[1] for i in selected_data]
+        ids = [i[2] for i in selected_data]
+        eq_texts = [f'{var}' for var, str in zip(variables, image)]
+        for distractor in range(args.distractor_num+1):
+            for group in range(5):
+                background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
+                rest_positions = random.sample([k for k in range(patch_num ** 2) if k not in [center_pos-1, center_pos, center_pos+1]], 10)
+                coordinates_nums = [(patch_num // 2, patch_num // 2)] + [(r % patch_num, r // patch_num) for r in rest_positions]
+                coordinates = [(patch_size * (c[0]), patch_size * (c[1])) for c in coordinates_nums][:distractor+1]
+                for i, (coordinate, coordinate_num) in enumerate(zip(coordinates, coordinates_nums)):
+                    background.paste(image[i], (coordinate[0], coordinate[1]))
+                    draw = ImageDraw.Draw(background)
+                    draw.text((coordinate[0]+1, coordinate[1]), eq_texts[i], fill='red')
+                background.save(f'{args.save_dir}/{ids[0]}_{label[0]}_{distractor}_{group}.png')
 
 
-def create_hcut_image(args):
+def create_hcut_image(args): 
+    x_pos = int(args.patch_size * (args.patch_num // 2))
+    for selected_data in tqdm(args.selected_data, desc="Creating images", ncols=100):
+        for y_pos in range(0, args.image_size - args.patch_size, 2):
+            image = [i[0] for i in selected_data]
+            label = [i[1] for i in selected_data]
+            ids = [i[2] for i in selected_data]
+            background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
+            if args.patch_size < 15:
+                image[0] = image[0].resize((14,14), Image.LANCZOS)
+            background.paste(image[0], (x_pos, y_pos))
+            background.save(f'{args.save_dir}/{ids[0]}_{label[0]}_{y_pos}.png')
 
 
 def create_vcut_image(args):
-
-
-# TODO: upsample images and paste them to the center
-def create_size_image(args):
-    ratios = list(range(1,11))
-    for number in tqdm(args.digit_set, desc="Creating images", ncols=100):
-        background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
-
+    y_pos = int(args.patch_size * (args.patch_num // 2))
+    for selected_data in tqdm(args.selected_data, desc="Creating images", ncols=100):
+        for x_pos in range(0, args.image_size - args.patch_size, 2):
+            image = [i[0] for i in selected_data]
+            label = [i[1] for i in selected_data]
+            ids = [i[2] for i in selected_data]
+            background = Image.new('RGB', (args.image_size, args.image_size), color = 'white')
+            background.paste(image[0], (x_pos, y_pos))
+            background.save(f'{args.save_dir}/{ids[0]}_{label[0]}_{x_pos}.png')
 
 
 def main(args):
@@ -59,6 +139,9 @@ def main(args):
     fashion_images, fashion_labels = load_fashion('./data/fashion', kind='t10k')
 
     # TODO: select arge.num_samples images and labels
+
+    args.selected_data = random.sample(list(zip(fashion_images, fashion_labels, list(range(len(fashion_images))))), args.samples * (args.distractor_num + 1))
+    args.selected_data = [args.selected_data[i:i+args.distractor_num+1] for i in range(0, len(args.selected_data), args.distractor_num + 1)]
 
     if args.task == "quality":
         create_quality_image(args)
@@ -104,25 +187,12 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        "--num_fashion",
-        type=int,
-        default=10000,
-        help="Number of distractor",
-    )
-
-    parser.add_argument(
         "--distractor_num",
         type=int,
         default=0,
         help="Number of distractor",
     )
 
-    parser.add_argument(
-        "--font_size",
-        type=int,
-        default=8,
-        help="Number of samples",
-    )
     
     args = parser.parse_args()
 
@@ -151,11 +221,11 @@ if __name__ == '__main__':
         args.samples = 100  
 
     if args.task == "distract":
-        args.save_dir = f'./images/{args.model}/{args.task}_{args.font_size}'
+        args.save_dir = f'./data/fashion/images/{args.model}/{args.task}'
     elif args.task == 'quality' or args.task == 'size' or args.task == 'hcut' or args.task == 'vcut':
-        args.save_dir = f'./images/{args.model}/{args.task}_{args.digits}'
+        args.save_dir = f'./data/fashion/images/{args.model}/{args.task}'
     elif args.task == 'position':
-        args.save_dir = f'./images/{args.model}/{args.task}_{args.distractor_num}'
+        args.save_dir = f'./data/fashion/images/{args.model}/{args.task}_{args.distractor_num}'
 
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
