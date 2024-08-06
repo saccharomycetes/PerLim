@@ -168,6 +168,8 @@ def create_hcut_image(args):
                 colors=[color],
                 fonts=[font]
             )
+            if args.rotate:
+                img = img.rotate(270)
             img.save(f'{args.save_dir}/{number[0]}_{y_pos}.png')
 
 def create_vcut_image(args):
@@ -185,8 +187,25 @@ def create_vcut_image(args):
                 colors=[color],
                 fonts=[font]
             )
+            if args.rotate:
+                img = img.rotate(90)
             img.save(f'{args.save_dir}/{number[0]}_{x_pos}.png')
 
+def create_contrast_image(args):
+    color_ratios = [i for i in range(1, 21)]
+    for number in tqdm(args.digit_set, desc="Creating images", ncols=100):
+        for color_ratio in color_ratios:
+            color = (int(255 * color_ratio / 20), int(255 * color_ratio / 20), int(255 * color_ratio / 20))
+            font = random.choice(fonts)
+            img = draw_text(
+                text=number,
+                img_size=(args.image_size, args.image_size),
+                font_size=[8],
+                position=[args.center_pos],
+                colors=[color],
+                fonts=[font]
+            )
+            img.save(f'{args.save_dir}/{number[0]}_{color}.png')
 
 def main(args):
 
@@ -259,6 +278,12 @@ if __name__ == '__main__':
         type=int,
         default=8,
         help="Number of samples",
+    )
+
+    parser.add_argument(
+        "--rotate",
+        action="store_true",
+        help="Enable rotation",
     )
     
     args = parser.parse_args()
