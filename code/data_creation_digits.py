@@ -255,7 +255,8 @@ if __name__ == '__main__':
             "position",
             "hcut",
             "vcut",
-            'distract'
+            'distract',
+            'contrast'
         ]
     )
 

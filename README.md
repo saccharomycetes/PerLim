@@ -17,7 +17,7 @@ rm -rf ~/miniconda3/miniconda.sh
 conda create -n perlim python=3.10 -y
 conda activate perlim
 
-pip3 install torch transformers Pillow tqdm numpy matplotlib accelerate tiktoken transformers_stream_generator torchvision
+pip3 install torch transformers Pillow tqdm numpy matplotlib accelerate tiktoken transformers_stream_generator torchvision einops
 ```
 
 Run code for dataset generation
