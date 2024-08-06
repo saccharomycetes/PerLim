@@ -13,7 +13,7 @@ question_base = '''
 7	Sneaker
 8	Bag
 9	Ankle boot
-Answer just with the corresponding object number from above directly.'''
+Answer just with the corresponding object number from above directly. '''
 
 def get_args():
     parser = argparse.ArgumentParser()
