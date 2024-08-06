@@ -18,7 +18,7 @@ colors = [
     "indigo"
 ]
 
-fonts = [os.path.join("./fonts", f) for f in os.listdir("./fonts")]
+fonts = [os.path.join("./data/fonts", f) for f in os.listdir("./data/fonts")]
 
 def generate_unique_numbers(digit_count, sample_size):
     """
@@ -194,18 +194,18 @@ def create_vcut_image(args):
 def create_contrast_image(args):
     color_ratios = [i for i in range(1, 21)]
     for number in tqdm(args.digit_set, desc="Creating images", ncols=100):
+        font = random.choice(fonts)
         for color_ratio in color_ratios:
             color = (int(255 * color_ratio / 20), int(255 * color_ratio / 20), int(255 * color_ratio / 20))
-            font = random.choice(fonts)
             img = draw_text(
                 text=number,
                 img_size=(args.image_size, args.image_size),
-                font_size=[8],
+                font_size=[args.font_size],
                 position=[args.center_pos],
                 colors=[color],
                 fonts=[font]
             )
-            img.save(f'{args.save_dir}/{number[0]}_{color}.png')
+            img.save(f'{args.save_dir}/{number[0]}_{color_ratio}.png')
 
 def main(args):
 
@@ -228,6 +228,8 @@ def main(args):
         create_vcut_image(args)
     elif args.task == "distract":
         create_distract_image(args)
+    elif args.task == "contrast":
+        create_contrast_image(args)
 
 
 if __name__ == '__main__':
@@ -309,13 +311,16 @@ if __name__ == '__main__':
     if args.task == "quality" or args.task == "size":
         args.samples = 500
     
-    args.center_pos = (args.image_size // 2, args.image_size // 2)
+    if args.task == "contrast":
+        args.samples = 200
+    
     if args.task == "position" or args.task == "distract" or args.task.find("cut") != -1:
         args.samples = 100  
 
+    args.center_pos = (args.image_size // 2, args.image_size // 2)
     if args.task == "distract":
         args.save_dir = f'./data/digits/images/{args.model}/{args.task}_{args.font_size}'
-    elif args.task == 'quality' or args.task == 'size' or args.task == 'hcut' or args.task == 'vcut':
+    elif args.task == 'quality' or args.task == 'size' or args.task == 'hcut' or args.task == 'vcut' or args.task == 'contrast':
         args.save_dir = f'./data/digits/images/{args.model}/{args.task}_{args.digits}'
     elif args.task == 'position':
         args.save_dir = f'./data/digits/images/{args.model}/{args.task}_{args.distractor_num}'

@@ -41,10 +41,16 @@ def main(args):
 
         image_path = os.path.join(args.img_path, image_name)
 
-        if "position" not in args.task and "distract" not in args.task:
-            question = f"What is the object presented in the image?{question_base}"
-        else:
-            question = f"What is the object marked by 'a'?{question_base}"
+        if args.data_type == "digit":
+            if "position" not in args.task and "distract" not in args.task:
+                question = "What is the number on the image?"
+            else:
+                question = "what is the number assigned to variable 'a' in the image?"
+        elif args.data_type == "fashion":
+            if "position" not in args.task and "distract" not in args.task:
+                question = f"What is the object presented in the image?{question_base}"
+            else:
+                question = f"What is the object marked by 'a'?{question_base}"
 
         prompt = q_to_instrut(question)
 

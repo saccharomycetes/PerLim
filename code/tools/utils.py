@@ -30,6 +30,12 @@ def get_args():
     )
 
     parser.add_argument(
+        "--data_type",
+        type=str,
+        default="digit",
+    )
+
+    parser.add_argument(
         "--total_part",
         type=int,
     )
