@@ -1,54 +1,15 @@
-python code/data_creation_digit.py --model fuyu-8b --task quality --digits 3
-python code/data_creation_digit.py --model fuyu-8b --task quality --digits 5
-python code/data_creation_digit.py --model fuyu-8b --task quality --digits 7
-python code/data_creation_digit.py --model fuyu-8b --task size --digits 3
-python code/data_creation_digit.py --model fuyu-8b --task size --digits 5
-python code/data_creation_digit.py --model fuyu-8b --task size --digits 7
-
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task quality --digits 3
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task quality --digits 5
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task quality --digits 7
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task size --digits 3
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task size --digits 5
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task size --digits 7
-
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task quality --digits 3
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task quality --digits 5
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task quality --digits 7
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task size --digits 3
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task size --digits 5
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task size --digits 7
-
-python code/data_creation_digit.py --model Qwen-VL-Chat --task quality --digits 3
-python code/data_creation_digit.py --model Qwen-VL-Chat --task quality --digits 5
-python code/data_creation_digit.py --model Qwen-VL-Chat --task quality --digits 7
-python code/data_creation_digit.py --model Qwen-VL-Chat --task size --digits 3
-python code/data_creation_digit.py --model Qwen-VL-Chat --task size --digits 5
-python code/data_creation_digit.py --model Qwen-VL-Chat --task size --digits 7
-
-python code/data_creation_digit.py --model fuyu-8b --task position --digits 3 --distractor_num 1
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task position --digits 3 --distractor_num 1
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task position --digits 3 --distractor_num 1
-python code/data_creation_digit.py --model Qwen-VL-Chat --task position --digits 3 --distractor_num 1
-python code/data_creation_digit.py --model Qwen-VL-Chat --task position --digits 3 --distractor_num 9
-
-python code/data_creation_digit.py --model fuyu-8b --task position --digits 3 --distractor_num 0
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task position --digits 3 --distractor_num 0
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task position --digits 3 --distractor_num 0
-python code/data_creation_digit.py --model Qwen-VL-Chat --task position --digits 3 --distractor_num 0
+python code/data_creation_digits.py --model blip2-flan-t5-xxl --task contrast --digits 7 --font_size 12
+python code/data_creation_digits.py --model llava-1.5-13b-hf --task contrast --digits 7 --font_size 12
+python code/data_creation_digits.py --model fuyu-8b --task contrast --digits 7 --font_size 12
+python code/data_creation_digits.py --model Qwen-VL-Chat --task contrast --digits 7 --font_size 12
 
 
-python code/data_creation_digit.py --model fuyu-8b --task hcut --digits 6
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task hcut --digits 3
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task hcut --digits 3
-python code/data_creation_digit.py --model Qwen-VL-Chat --task hcut --digits 3
+python code/data_creation_digits.py --model fuyu-8b --task hcut --digits 6 --rotate
+python code/data_creation_digits.py --model blip2-flan-t5-xxl --task hcut --digits 3 --rotate
+python code/data_creation_digits.py --model llava-1.5-13b-hf --task hcut --digits 3 --rotate
+python code/data_creation_digits.py --model Qwen-VL-Chat --task hcut --digits 3 --rotate
 
-python code/data_creation_digit.py --model fuyu-8b --task vcut --digits 6
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task vcut --digits 3
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task vcut --digits 3
-python code/data_creation_digit.py --model Qwen-VL-Chat --task vcut --digits 3
-
-python code/data_creation_digit.py --model fuyu-8b --task distract --digits 3 --distractor_num 9
-python code/data_creation_digit.py --model blip2-flan-t5-xxl --task distract --digits 3 --distractor_num 9
-python code/data_creation_digit.py --model llava-1.5-13b-hf --task distract --digits 3 --distractor_num 9
-python code/data_creation_digit.py --model Qwen-VL-Chat --task distract --digits 3 --distractor_num 9
+python code/data_creation_digits.py --model fuyu-8b --task vcut --digits 6 --rotate
+python code/data_creation_digits.py --model blip2-flan-t5-xxl --task vcut --digits 3 --rotate
+python code/data_creation_digits.py --model llava-1.5-13b-hf --task vcut --digits 3 --rotate
+python code/data_creation_digits.py --model Qwen-VL-Chat --task vcut --digits 3 --rotate
