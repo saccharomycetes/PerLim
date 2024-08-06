@@ -32,7 +32,7 @@ def get_args():
     parser.add_argument(
         "--data_type",
         type=str,
-        default="digit",
+        default="fashion",
     )
 
     parser.add_argument(
