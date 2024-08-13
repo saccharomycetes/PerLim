@@ -25,6 +25,7 @@ Run code for dataset generation
 ```
 bash scripts/data_creation_digit.sh
 bash scripts/data_creation_fashion.sh
+bash scripts/data_creation_digit_vertical.sh
 ```
 
 Run code for inferencing
@@ -32,6 +33,7 @@ Run code for inferencing
 ```
 bash scripts/run_digit.sh
 bash scripts/run_fashion.sh
+bash scripts/run_digit_vertical.sh
 ```
 
 Currently only fashion codes are tested, will update digits code soon.

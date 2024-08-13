@@ -163,3 +163,4 @@ cython_debug/
 
 data/fashion/images/
 data/digits/images/
+data/digits_vertical/images/

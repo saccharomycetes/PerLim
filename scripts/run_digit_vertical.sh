@@ -22,15 +22,15 @@
 
 # Define the models and datasets
 models=("blip2-flan-t5-xxl" "instructblip-vicuna-13b" "llava-1.5-13b-hf" "fuyu-8b" "Qwen-VL-Chat")
-datasets=("contrast_7" "hcut_3" "vcut_3")
+datasets=("hcut_2" "vcut_2")
 
 # Special cases
 declare -A special_cases
-special_cases["fuyu-8b,hcut_3"]="hcut_6"
-special_cases["fuyu-8b,vcut_3"]="vcut_6"
+special_cases["fuyu-8b,hcut_2"]="hcut_4"
+special_cases["fuyu-8b,vcut_2"]="vcut_4"
 
 # Define the number of GPUs and parts
-declare -a gpus=(0 1 2 3 4 5 6 7)
+declare -a gpus=(0)
 num_gpus=${#gpus[@]}
 default_total_parts=$num_gpus
 
@@ -49,7 +49,7 @@ run_command() {
         actual_dataset=${special_cases["$model,$dataset"]}
     fi
     
-    command="CUDA_VISIBLE_DEVICES=$gpu python src/run.py --img_path ./data/digits/images/$model/$actual_dataset --total_part $total_parts --this_part $part --data_type digit --output_path ./data/digits/prediction"
+    command="CUDA_VISIBLE_DEVICES=$gpu python src/run.py --img_path ./data/digits_vertical/images/$model/$actual_dataset --total_part $total_parts --this_part $part --data_type digit --output_path ./data/digits_vertical/prediction"
     
     echo "Executing: $command"
     eval $command &

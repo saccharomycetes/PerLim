@@ -204,7 +204,7 @@ def create_contrast_image(args):
                 position=[args.center_pos],
                 colors=[color],
                 fonts=[font]
-            )
+            ) 
             img.save(f'{args.save_dir}/{number[0]}_{color_ratio}.png')
 
 def main(args):
